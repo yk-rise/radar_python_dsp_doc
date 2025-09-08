@@ -13,14 +13,15 @@ plt.rcParams['axes.unicode_minus'] = False    # 正常显示负号
 # --- 1. 参数定义 ---
 # ==========================================================
 c = 3e8
-f_start = 77e9
-bandwidth = 1e9
+f_start = 24e9
+bandwidth = 250e6
 T_chirp = 40e-6
-num_samples = 1024
-num_chirps = 256
-f_c = f_start + bandwidth / 2
+num_samples = 256
+num_chirps = 64
+f_c = f_start 
 lambda_c = c / f_c
 sweep_slope = bandwidth / T_chirp
+range_res = c / (2 * bandwidth)
 # max_range_m=(c/2*bandwidth)*(num_samples//2)
 # %%
 # ==========================================================
@@ -79,7 +80,7 @@ range_map = 20 * np.log10(range_fft_data + 1e-6)  # dB 显示
 range_fft_magnitude = 20 * np.log10(np.abs(range_fft_data[:, :num_samples//2]) + 1e-6)  # 取前一半 & 转为 dB
 
 # 构造距离轴（只用正频率）
-range_axis = np.linspace(0, c * T_chirp * sweep_slope / (2 * num_samples) * (num_samples // 2), num_samples // 2)
+range_axis = np.arange(num_samples) * range_res/2
 
 plt.figure(figsize=(6, 5))
 plt.imshow(
@@ -112,7 +113,6 @@ print("第三步: 正在生成RDM图像...")
 rdm_db = 20 * np.log10(np.abs(rdm) + 1e-6)
 rdm_db[np.isneginf(rdm_db)] = 0
 
-range_res = c / (2 * bandwidth)
 doppler_res = lambda_c / (2 * num_chirps * T_chirp)
 
 range_axis = np.arange(num_samples) * range_res
